@@ -1,4 +1,4 @@
-function createScriptTag(src, $) {
+export const createScriptTag = (src, $) => {
   if (src) {
     var scriptTag = $("<script>");
     scriptTag.attr({
@@ -7,9 +7,9 @@ function createScriptTag(src, $) {
     });
     $("body").append(scriptTag);
   }
-}
+};
 
-function createStyleTag(link, $) {
+export const createStyleTag = (link, $) => {
   if (link) {
     var linkTag = $("<link>");
     linkTag.attr({
@@ -19,9 +19,4 @@ function createStyleTag(link, $) {
     });
     $("head").append(linkTag);
   }
-}
-
-module.exports = {
-  createScriptTag: createScriptTag,
-  createStyleTag: createStyleTag
 };

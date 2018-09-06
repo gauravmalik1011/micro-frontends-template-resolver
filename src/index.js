@@ -1,40 +1,81 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-var pageRenderer = require("./utils/pageRenderer");
+import http from "http";
+import chalk from "chalk";
+import app from "./app";
 
-var app = express();
+/**
+ * Normalize a port into a number, string, or false.
+ */
 
-// view engine setup
-// app.engine("html", es6Renderer);
-// app.set("views", path.join(__dirname, "views"));
-// app.set("view engine", "html");
+const normalizePort = val => {
+  const port = parseInt(val, 10);
 
-app.use(logger("dev"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
 
-app.use(express.static(path.join(__dirname, "../public")));
+  if (port >= 0) {
+    // port number
+    return port;
+  }
 
-app.get("*", pageRenderer);
+  return false;
+};
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+/**
+ * Event listener for HTTP server "error" event.
+ */
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
+const onError = error => {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
 
-  // render the error page
-  res.status(err.status || 500);
-  res.send("Error occurred : " + err.message);
-});
+  const bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
 
-module.exports = app;
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+};
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+const onListening = () => {
+  const addr = server.address();
+  const bind =
+    typeof addr === "string" ? "pipe :" + addr : "port :" + addr.port;
+  console.log(chalk.blue("Listening on " + bind));
+};
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+const port = normalizePort(process.env.PORT || "8000");
+app.set("port", port);
+
+/**
+ * Create HTTP server.
+ */
+
+const server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on("error", onError);
+server.on("listening", onListening);

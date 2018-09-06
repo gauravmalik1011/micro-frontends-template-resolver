@@ -1,48 +1,50 @@
-var express = require("express");
-var path = require("path");
-var fs = require("fs");
-var cheerio = require("cheerio");
+import express from "express";
+import path from "path";
+import fs from "fs";
+import cheerio from "cheerio";
 
-var fetch = require("../utils/fetch");
-var templates = require("../templates");
-var MODULE_RESOLVER_ENDPOINT =
-  process.env.MODULE_RESOLVER_ENDPOINT || "http://localhost:8500";
-var { createScriptTag, createStyleTag } = require("../utils");
+import fetch from "../utils/fetch";
+import templateRegistry from "../templateRegistry";
+import { createScriptTag, createStyleTag } from "../utils";
 
-function pageRenderer(req, res, next) {
-  var pageName = req.path.split("/")[1];
-  if (templates[pageName]) {
+const MODULE_RESOLVER_ENDPOINT =
+  process.env.MODULE_RESOLVER_ENDPOINT || "http://localhost:8001";
+
+const pageRenderer = async (req, res, next) => {
+  const pageName = req.path.split("/")[1];
+
+  if (templateRegistry[pageName]) {
     const $ = cheerio.load(
       fs.readFileSync(
-        path.join(__dirname, "../templates/", templates[pageName])
+        path.resolve(__dirname, "../templates/", templateRegistry[pageName])
       )
     );
 
-    var modulesPromiseList = [];
+    const modulesPromiseList = [];
 
-    $("[data-module]").each(function(index, element) {
-      (function(element) {
-        var moduleName = element.attr("data-module");
-        modulesPromiseList.push(
-          fetch(MODULE_RESOLVER_ENDPOINT + "/" + moduleName, function(content) {
-            element.html(content.html);
+    $("[data-module]").each((index, element) => {
+      const $element = $(element);
+      const moduleName = $element.attr("data-module");
 
-            content.css.forEach(function(link) {
-              createStyleTag(link, $);
-            });
+      modulesPromiseList.push(
+        fetch(MODULE_RESOLVER_ENDPOINT + "/" + moduleName, content => {
+          $element.html(content.html);
 
-            content.js.forEach(function(src) {
-              createScriptTag(src, $);
-            });
-          })
-        );
-      })($(element));
+          content.css.forEach(function(link) {
+            createStyleTag(link, $);
+          });
+
+          content.js.forEach(function(src) {
+            createScriptTag(src, $);
+          });
+        })
+      );
     });
 
-    Promise.all(modulesPromiseList).then(function() {
-      res.send($.html());
-    });
-  } else res.end();
-}
+    await Promise.all(modulesPromiseList);
 
-module.exports = pageRenderer;
+    res.send($.html());
+  } else res.send("Unknown page.");
+};
+
+export default pageRenderer;

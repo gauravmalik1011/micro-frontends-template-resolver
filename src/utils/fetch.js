@@ -1,11 +1,11 @@
-var nodeFetch = require("node-fetch");
+import nodeFetch from "node-fetch";
 
-function fetch(url, callback) {
+const fetch = (url, callback) => {
   return nodeFetch(url)
     .then(function(response) {
       return response.json();
     })
     .then(callback);
-}
+};
 
-module.exports = fetch;
+export default fetch;
