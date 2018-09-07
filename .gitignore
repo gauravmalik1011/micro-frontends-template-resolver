@@ -75,3 +75,5 @@ typings/
 # Edior settings
 .vscode
 .vs
+
+build/*
