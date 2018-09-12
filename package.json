@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "webpack --config webpack/webpack.config.prod.js  --colors",
-    "start:dev": "nodemon ./src/index.js --exec babel-node --presets @babel/preset-env ",
-    "start:prod": "node ./build/server.js"
+    "build:server": "./node_modules/.bin/webpack-cli --config ./config/webpack/server.js",
+    "start": "npm run build:server && node ./build/server.js"
   },
   "dependencies": {
     "chalk": "^2.4.1",
