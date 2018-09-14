@@ -56,7 +56,10 @@ const onListening = () => {
   const addr = server.address();
   const bind =
     typeof addr === "string" ? "pipe :" + addr : "port :" + addr.port;
-  console.log(chalk.blue("Listening on " + bind));
+  console.log(
+    `[${new Date().toISOString()}]`,
+    chalk.blue(`App is running: 🌎 http://localhost:${addr.port}`)
+  );
 };
 
 /**

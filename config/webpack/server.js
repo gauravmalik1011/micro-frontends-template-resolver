@@ -5,7 +5,7 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const nodeExternals = require("webpack-node-externals");
 
-const dest = Path.join(__dirname, "../build");
+const dest = Path.join(__dirname, "../../build");
 
 module.exports = (env, args) => {
   return {
