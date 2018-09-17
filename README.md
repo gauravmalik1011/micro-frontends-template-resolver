@@ -2,7 +2,7 @@
 
 ## template-resolver
 
-To start server on port 8080
+To start server on port 8000
 
 ```
 yarn start
