@@ -1,11 +1,11 @@
 import nodeFetch from "node-fetch";
 
-const fetch = (url, callback) => {
-  return nodeFetch(url)
+const fetch = (url, options, callback) => {
+  return nodeFetch(url, typeof options === "object" ? options : undefined)
     .then(function(response) {
       return response.json();
     })
-    .then(callback);
+    .then(typeof options === "function" ? options : callback);
 };
 
 export default fetch;

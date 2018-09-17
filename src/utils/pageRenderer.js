@@ -27,17 +27,27 @@ const pageRenderer = async (req, res, next) => {
       const moduleName = $element.attr("data-module");
 
       modulesPromiseList.push(
-        fetch(MODULE_RESOLVER_ENDPOINT + "/" + moduleName, content => {
-          $element.html(content.html);
+        fetch(
+          MODULE_RESOLVER_ENDPOINT + "/" + moduleName,
+          {
+            method: "POST",
+            body: JSON.stringify({
+              api: $element.attr("data-api") || ""
+            }),
+            headers: { "Content-Type": "application/json" }
+          },
+          content => {
+            $element.html(content.html);
 
-          content.css.forEach(function(link) {
-            createStyleTag(link, $);
-          });
+            content.css.forEach(function(link) {
+              createStyleTag(link, $);
+            });
 
-          content.js.forEach(function(src) {
-            createScriptTag(src, $);
-          });
-        })
+            content.js.forEach(function(src) {
+              createScriptTag(src, $);
+            });
+          }
+        )
       );
     });
 
