@@ -32,7 +32,8 @@ const pageRenderer = async (req, res, next) => {
           {
             method: "POST",
             body: JSON.stringify({
-              api: $element.attr("data-api") || ""
+              api: $element.attr("data-api") || "",
+              clientOnly: $element.attr("data-client-only") || "",
             }),
             headers: { "Content-Type": "application/json" }
           },
