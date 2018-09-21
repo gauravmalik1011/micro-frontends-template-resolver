@@ -22,7 +22,7 @@ const pageRenderer = async (req, res, next) => {
 
     const modulesPromiseList = [];
 
-    $("[data-module]").each((index, element) => {
+    $("fragment").each((index, element) => {
       const $element = $(element);
       const moduleName = $element.attr("data-module");
 
@@ -37,7 +37,16 @@ const pageRenderer = async (req, res, next) => {
             headers: { "Content-Type": "application/json" }
           },
           content => {
-            $element.html(content.html);
+            const $newElement = $(
+              $.parseHTML(content.html, cheerio.Document, true)[0]
+            );
+
+            const attributes = $element.attr();
+
+            Object.keys(attributes).forEach(key => {
+              $newElement.attr(key, attributes[key]);
+            });
+            $element.replaceWith($newElement);
 
             content.css.forEach(function(link) {
               createStyleTag(link, $);
